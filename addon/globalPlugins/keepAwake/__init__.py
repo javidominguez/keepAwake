@@ -1,6 +1,13 @@
 #!/usr/bin/python
 #-coding: UTF-8 -*-
 
+"""
+Addon for NVDA that Provides a tool to enable or disable energy saving and keep the computer awake.
+
+This file is covered by the GNU General Public License.
+See the file COPYING.txt for more details.
+Copyright  (c) 2025 Javi Dominguez <fjavids@gmail.com>
+ """
 import tones
 import addonHandler
 import globalPluginHandler
@@ -10,8 +17,10 @@ import wx
 import speech
 import ctypes
 
+addonHandler.initTranslation()
+
 # Translators: Labels of the Menu in Tools to toggle the keep Awake mode.
-POWER_OPTIONS = _("Power options")
+POWER_OPTIONS = _("Po&wer options...")
 KEEP_AWAKE = _("Keep computer awake")
 ALLOW_SLEEP = _("Allow Computer to Sleep")
 
@@ -20,8 +29,6 @@ ES_CONTINUOUS = 0x80000000
 ES_SYSTEM_REQUIRED = 0x00000001
 ES_DISPLAY_REQUIRED = 0x00000002
 
-addonHandler.initTranslation()
-
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	speechOnDemand = {"speakOnDemand": True} if hasattr(speech.SpeechMode, "onDemand") else {}
@@ -29,12 +36,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def __init__(self, *args, **kwargs):
 		super(GlobalPlugin, self).__init__(*args, **kwargs)
 		self.toolsMenu = gui.mainFrame.sysTrayIcon.toolsMenu
-		powerMenu = wx.Menu()
-		keepAwakeItem = powerMenu.Append(wx.ID_ANY, KEEP_AWAKE)
+		self.powerMenu = wx.Menu()
+		keepAwakeItem = self.powerMenu.Append(wx.ID_ANY, KEEP_AWAKE)
 		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, self.onMenuItemAwake, keepAwakeItem)
-		allowSleepItem = powerMenu.Append(wx.ID_ANY, ALLOW_SLEEP)
+		allowSleepItem = self.powerMenu.Append(wx.ID_ANY, ALLOW_SLEEP)
 		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, self.onMenuItemSleep, allowSleepItem)
-		self.power_submenu = self.toolsMenu .AppendSubMenu(powerMenu, POWER_OPTIONS)
+		self.power_submenu = self.toolsMenu .AppendSubMenu(self.powerMenu, POWER_OPTIONS)
 
 	def terminate(self):
 		try:
