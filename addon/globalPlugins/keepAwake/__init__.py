@@ -35,12 +35,20 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def __init__(self, *args, **kwargs):
 		super(GlobalPlugin, self).__init__(*args, **kwargs)
+		# The Windows API does not expose a method to query the current state of this setting.
+		# A flag is used for tracking purposes. The variable is stored in globalVars to preserve synchronization across addon reloads.
+		if not hasattr(globalVars, "keepAwake"):
+			globalVars.keepAwake = False
 		self.toolsMenu = gui.mainFrame.sysTrayIcon.toolsMenu
 		self.powerMenu = wx.Menu()
-		keepAwakeItem = self.powerMenu.Append(wx.ID_ANY, KEEP_AWAKE)
-		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, self.onMenuItemAwake, keepAwakeItem)
-		allowSleepItem = self.powerMenu.Append(wx.ID_ANY, ALLOW_SLEEP)
-		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, self.onMenuItemSleep, allowSleepItem)
+		self.keepAwakeItem = self.powerMenu.Append(wx.ID_ANY, KEEP_AWAKE, kind=wx.ITEM_RADIO)
+		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, self.onMenuItemAwake, self.keepAwakeItem)
+		self.allowSleepItem = self.powerMenu.Append(wx.ID_ANY, ALLOW_SLEEP, kind=wx.ITEM_RADIO)
+		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, self.onMenuItemSleep, self.allowSleepItem)
+		if globalVars.keepAwake:
+			self.keepAwakeItem.Check(True)
+		else:
+			self.allowSleepItem.Check(True)
 		self.power_submenu = self.toolsMenu .AppendSubMenu(self.powerMenu, POWER_OPTIONS)
 
 	def terminate(self):
@@ -61,8 +69,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def onMenuItemAwake(self, event):
 		self.keepAwake()
+		globalVars.keepAwake = True
 		wx.MessageBox(_("The computer will remain awake while NVDA is running or until the power option is changed."), KEEP_AWAKE)
 
 	def onMenuItemSleep(self, event):
 		self.allowSleep()
+		globalVars.keepAwake = False
 		wx.MessageBox(_("Power-saving settings have been restored, and the computer can now sleep."), ALLOW_SLEEP)
