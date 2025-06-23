@@ -1,0 +1,64 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the 'keepAwake' package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 'keepAwake' '2025.1.0'\n"
+"Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
+"POT-Creation-Date: 2025-06-23 10:00+0300\n"
+"PO-Revision-Date: 2025-06-23 10:08+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.6\n"
+
+#. Translators: Labels of the Menu in Tools to toggle the keep Awake mode.
+#: addon\globalPlugins\keepAwake\__init__.py:23
+msgid "Po&wer options..."
+msgstr "&Параметри живлення..."
+
+#: addon\globalPlugins\keepAwake\__init__.py:24
+msgid "Keep computer awake"
+msgstr "Тримати комп'ютер увімкненим"
+
+#: addon\globalPlugins\keepAwake\__init__.py:25
+msgid "Allow Computer to Sleep"
+msgstr "Дозволити комп'ютеру перейти в режим сну"
+
+#: addon\globalPlugins\keepAwake\__init__.py:64
+msgid ""
+"The computer will remain awake while NVDA is running or until the power "
+"option is changed."
+msgstr ""
+"Комп'ютер залишатиметься увімкненим, поки запущено NVDA, або поки не "
+"буде змінено параметри живлення."
+
+#: addon\globalPlugins\keepAwake\__init__.py:68
+msgid ""
+"Power-saving settings have been restored, and the computer can now sleep."
+msgstr ""
+"Налаштування енергозбереження відновлено, і комп'ютер тепер може "
+"переходити в режим сну."
+
+#. Add-on summary/title, usually the user visible name of the add-on
+#. Translators: Summary/title for this add-on
+#. to be shown on installation and add-on information found in add-on store
+#: buildVars.py:23
+msgid "Keep awake"
+msgstr "Не переходити в режим сну"
+
+#. Add-on description
+#. Translators: Long description to be shown for this add-on on add-on information from add-on store
+#: buildVars.py:26
+msgid ""
+"Provides a tool to enable or disable energy saving and keep the computer "
+"awake."
+msgstr ""
+"Надає інструмент для ввімкнення або вимкнення енергозбереження та "
+"підтримання комп'ютера в режимі очікування."
