@@ -25,7 +25,7 @@ addon_info = {
 	# Translators: Long description to be shown for this add-on on add-on information from add-on store
 	"addon_description": _("""Provides a tool to enable or disable energy saving and keep the computer awake."""),
 	# version
-	"addon_version": "2025.1.1",
+	"addon_version": "2025.1.2",
 	# Author(s)
 	"addon_author": "Javi Dominguez <fjavids@gmail.com>",
 	# URL for the add-on documentation support

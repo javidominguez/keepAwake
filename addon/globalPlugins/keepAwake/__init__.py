@@ -16,6 +16,8 @@ import gui
 import wx
 import speech
 import ctypes
+from threading import Thread, enumerate
+from time import sleep
 
 addonHandler.initTranslation()
 
@@ -35,10 +37,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def __init__(self, *args, **kwargs):
 		super(GlobalPlugin, self).__init__(*args, **kwargs)
+
 		# The Windows API does not expose a method to query the current state of this setting.
 		# A flag is used for tracking purposes. The variable is stored in globalVars to preserve synchronization across addon reloads.
 		if not hasattr(globalVars, "keepAwake"):
 			globalVars.keepAwake = False
+
+		# If it doesn't exist, instantiate and start a thread to ensure persistence of the always-awake mode.
+		if "KeepAwake" not in [th.name for th in enumerate()]:
+			thKeepAwake(seconds=1800).start()
+
 		self.toolsMenu = gui.mainFrame.sysTrayIcon.toolsMenu
 		self.powerMenu = wx.Menu()
 		self.keepAwakeItem = self.powerMenu.Append(wx.ID_ANY, KEEP_AWAKE, kind=wx.ITEM_RADIO)
@@ -76,3 +84,20 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.allowSleep()
 		globalVars.keepAwake = False
 		wx.MessageBox(_("Power-saving settings have been restored, and the computer can now sleep."), ALLOW_SLEEP)
+
+class thKeepAwake(Thread):
+	def __init__(self, seconds=1800):
+		super().__init__(daemon=True)
+		self.seconds = seconds
+		self.name = "KeepAwake"
+
+	def run(self):
+		while(True):
+			sleep(self.seconds)
+			try:
+				if globalVars.keepAwake:
+					ctypes.windll.kernel32.SetThreadExecutionState(
+						ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED
+					)
+			except AttributeError:
+				break
