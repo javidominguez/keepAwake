@@ -7,7 +7,8 @@ Addon for NVDA that Provides a tool to enable or disable energy saving and keep 
 This file is covered by the GNU General Public License.
 See the file COPYING.txt for more details.
 Copyright  (c) 2025 Javi Dominguez <fjavids@gmail.com>
- """
+"""
+
 import tones
 import addonHandler
 import globalPluginHandler
@@ -44,9 +45,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			globalVars.keepAwake = False
 
 		# If it doesn't exist, instantiate and start a thread to ensure persistence of the always-awake mode.
-		if "KeepAwake" not in [th.name for th in enumerate()]:
-			thKeepAwake(seconds=1800).start()
+		if "KeepAwake" not in [thread.name for thread in enumerate()]:
+			thKeepAwake(seconds=300).start()
 
+		# Construction of the addon submenu in the NVDA Tools menu.
 		self.toolsMenu = gui.mainFrame.sysTrayIcon.toolsMenu
 		self.powerMenu = wx.Menu()
 		self.keepAwakeItem = self.powerMenu.Append(wx.ID_ANY, KEEP_AWAKE, kind=wx.ITEM_RADIO)
@@ -65,37 +67,32 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		except Exception:
 			pass
 
-	def keepAwake (self):
+	def onMenuItemAwake(self, event):
 		# Combine flags to avoid screening and screen off
 		ctypes.windll.kernel32.SetThreadExecutionState(
 			ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED
 		)
-
-	def allowSleep(self):
-		# Restore system default behavior
-		ctypes.windll.kernel32.SetThreadExecutionState(ES_CONTINUOUS)
-
-	def onMenuItemAwake(self, event):
-		self.keepAwake()
 		globalVars.keepAwake = True
 		wx.MessageBox(_("The computer will remain awake while NVDA is running or until the power option is changed."), KEEP_AWAKE)
 
 	def onMenuItemSleep(self, event):
-		self.allowSleep()
+		# Restore system default behavior
+		ctypes.windll.kernel32.SetThreadExecutionState(ES_CONTINUOUS)
 		globalVars.keepAwake = False
 		wx.MessageBox(_("Power-saving settings have been restored, and the computer can now sleep."), ALLOW_SLEEP)
 
 class thKeepAwake(Thread):
-	def __init__(self, seconds=1800):
+	def __init__(self, seconds=300):
 		super().__init__(daemon=True)
 		self.seconds = seconds
 		self.name = "KeepAwake"
 
 	def run(self):
-		while(True):
+		while True:
 			sleep(self.seconds)
 			try:
 				if globalVars.keepAwake:
+					# Repeat the call to the Windows API to force the system to remain awake.
 					ctypes.windll.kernel32.SetThreadExecutionState(
 						ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED
 					)
